@@ -1,62 +1,14 @@
-import puppeteer from 'puppeteer';
+import express from 'express';
 
-export default async function handler(req, res) {
-    const { item, store } = req.query;
-    
-    if (!item || !store) {
-        return res.status(400).json({ error: 'Item and store are required' });
-    }
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-    let results = [];
-    if (store === 'FoodBasics') {
-        results = await scrapeFoodBasics(item);
-    } else if (store === 'Walmart') {
-        results = await scrapeWalmart(item);
-    } else {
-        return res.status(400).json({ error: 'Invalid store' });
-    }
+// Simple API route for testing
+app.get('/api/scraper', (req, res) => {
+    res.json({ message: 'Scraper API is working!' });
+});
 
-    res.status(200).json(results);
-}
-
-async function scrapeFoodBasics(query) {
-    const url = `https://www.foodbasics.ca/search?filter=${query}`;
-    const browser = await puppeteer.launch({ headless: true });
-    const page = await browser.newPage();
-    await page.goto(url, { waitUntil: 'networkidle2' });
-
-    const results = await page.evaluate(() => {
-        const items = [];
-        document.querySelectorAll('.default-product-tile').forEach(item => {
-            const name = item.getAttribute('data-product-name') || 'No name';
-            const priceElement = item.querySelector('.pricing__sale-price .price-update');
-            const price = priceElement ? priceElement.innerText.replace('$', '') : '0.00';
-            items.push({ name, price, store: 'FoodBasics' });
-        });
-        return items;
-    });
-
-    await browser.close();
-    return results;
-}
-
-async function scrapeWalmart(query) {
-    const url = `https://www.walmart.ca/search?q=${query}`;
-    const browser = await puppeteer.launch({ headless: true });
-    const page = await browser.newPage();
-    await page.goto(url, { waitUntil: 'networkidle2' });
-
-    const results = await page.evaluate(() => {
-        const items = [];
-        document.querySelectorAll('.product-tile').forEach(item => {
-            const name = item.querySelector('.product-title')?.innerText || 'No name';
-            const priceElement = item.querySelector('.price');
-            const price = priceElement ? priceElement.innerText.replace('$', '') : '0.00';
-            items.push({ name, price, store: 'Walmart' });
-        });
-        return items;
-    });
-
-    await browser.close();
-    return results;
-}
+// Start server
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
