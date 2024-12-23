@@ -1,26 +1,18 @@
-const results = await page.evaluate(() => {
-    const items = [];
-    document.querySelectorAll('.default-product-tile').forEach(item => {
-        const name = item.getAttribute('data-product-name') || 'No name';
-        const productId = item.getAttribute('data-product-code') || 'N/A';
+import { scrapeFoodBasics, generateHTML } from '../../lib/scraper';
 
-        // Get visible product title if available
-        const titleElement = document.querySelector(`#itemTitle-${productId}`);
-        const visibleTitle = titleElement ? titleElement.innerText : name;
+export default async function handler(req, res) {
+    if (req.method === 'POST') {
+        const { query } = req.body;
 
-        // Extract price from .pricing__sale-price
-        const priceElement = item.querySelector('.pricing__sale-price .price-update');
-        const price = priceElement ? priceElement.innerText.replace('$', '') : '0.00';
-
-        const category = item.getAttribute('data-product-category') || 'Unknown category';
-
-        items.push({
-            name: visibleTitle,
-            price: parseFloat(price),
-            category,
-            store: 'Food Basics'
-        });
-    });
-    console.log(items);  // Add logging to check what data you're getting
-    return items;
-});
+        try {
+            const results = await scrapeFoodBasics(query);
+            const htmlContent = generateHTML(results);
+            res.status(200).send(htmlContent); // Send HTML as response
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Error scraping data' });
+        }
+    } else {
+        res.status(405).json({ message: 'Method Not Allowed' });
+    }
+}
