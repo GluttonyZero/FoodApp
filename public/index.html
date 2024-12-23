@@ -8,35 +8,40 @@
 <body>
     <h1>Food Price Scraper</h1>
     
+    <!-- Form for input -->
     <form id="scraperForm">
-        <input type="text" id="item" name="item" placeholder="Enter fruit/veggie name" required>
-        <br>
-        
-        <label for="store">Select Store:</label>
+        <label for="item">Enter a fruit or vegetable:</label>
+        <input type="text" id="item" name="item" required><br><br>
+
+        <label for="store">Choose a store:</label><br>
         <input type="radio" id="foodbasics" name="store" value="FoodBasics" required>
-        <label for="foodbasics">Food Basics</label>
-        <input type="radio" id="walmart" name="store" value="Walmart" required>
-        <label for="walmart">Walmart</label>
-        <br>
-        
-        <button type="submit">Submit</button>
+        <label for="foodbasics">FoodBasics</label><br>
+        <input type="radio" id="walmart" name="store" value="Walmart">
+        <label for="walmart">Walmart</label><br><br>
+
+        <input type="submit" value="Submit">
     </form>
 
-    <h2>Results:</h2>
+    <!-- Div to display the results -->
     <div id="results"></div>
 
     <script>
         document.getElementById('scraperForm').addEventListener('submit', async function(event) {
             event.preventDefault();
 
+            // Get the input data
             const item = document.getElementById('item').value;
             const store = document.querySelector('input[name="store"]:checked').value;
-            
+
             // Make the request to the API
             const response = await fetch(`/api/scraper?item=${item}&store=${store}`);
-            const data = await response.json();
 
-            // Display the results
+            if (!response.ok) {
+                console.error('Failed to fetch data', response.statusText);
+                return;
+            }
+
+            const data = await response.json();
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = '';  // Clear previous results
 

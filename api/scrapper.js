@@ -1,42 +1,16 @@
 import puppeteer from 'puppeteer';
+import express from 'express';
+import cors from 'cors';  // To handle cross-origin requests
 
-export default async function handler(req, res) {
-    const { item, store } = req.query;
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-    if (!item || !store) {
-        return res.status(400).json({ error: 'Item and store are required' });
-    }
+app.use(cors());  // Enable CORS for frontend to backend communication
 
-    try {
-        let results = [];
-
-        // Scraping logic for different stores
-        if (store === 'FoodBasics') {
-            results = await scrapeFoodBasics(item);
-        } else if (store === 'Walmart') {
-            results = await scrapeWalmart(item);
-        } else {
-            return res.status(400).json({ error: 'Invalid store' });
-        }
-
-        if (results.length === 0) {
-            return res.status(404).json({ error: 'No results found' });
-        }
-
-        return res.status(200).json(results);
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ error: `Failed to scrape: ${error.message}` });
-    }
-}
-
-// Scraping function for FoodBasics
+// Scraping FoodBasics
 async function scrapeFoodBasics(query) {
     const url = `https://www.foodbasics.ca/search?filter=${query}`;
-    const browser = await puppeteer.launch({
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'] // Ensure it works in serverless environments
-    });
+    const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'networkidle2' });
 
@@ -55,13 +29,10 @@ async function scrapeFoodBasics(query) {
     return results;
 }
 
-// Scraping function for Walmart
+// Scraping Walmart
 async function scrapeWalmart(query) {
     const url = `https://www.walmart.ca/search?q=${query}`;
-    const browser = await puppeteer.launch({
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'] // Ensure it works in serverless environments
-    });
+    const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'networkidle2' });
 
@@ -79,3 +50,24 @@ async function scrapeWalmart(query) {
     await browser.close();
     return results;
 }
+
+// API Endpoint
+app.get('/api/scraper', async (req, res) => {
+    const { item, store } = req.query;
+    let results = [];
+
+    if (store === 'FoodBasics') {
+        results = await scrapeFoodBasics(item);
+    } else if (store === 'Walmart') {
+        results = await scrapeWalmart(item);
+    } else {
+        return res.status(400).json({ error: 'Invalid store' });
+    }
+
+    res.json(results);
+});
+
+// Start Server
+app.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
+});
