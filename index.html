@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Price Scraper</title>
+</head>
+<body>
+    <form id="scraperForm">
+        <label for="itemName">Item:</label>
+        <input type="text" id="itemName" name="itemName"><br><br>
+
+        <input type="radio" id="Store1" name="store" value="Foodbasics" checked>
+        <label for="Store1">FoodBasics</label><br>
+
+        <input type="radio" id="Store2" name="store" value="Walmart">
+        <label for="Store2">Walmart</label><br>
+
+        <button type="button" id="searchButton">Search</button>
+    </form>
+
+    <script>
+        import puppeteer from 'puppeteer';
+
+        async function scrapeFoodBasics(query) {
+            const url = `https://www.foodbasics.ca/search?filter=${query}`;
+            const browser = await puppeteer.launch({ headless: true });
+            const page = await browser.newPage();
+            await page.setViewport({ width: 1200, height: 800 });
+            await page.goto(url, { waitUntil: 'networkidle2' });
+            await page.waitForSelector('.default-product-tile');
+
+            const results = await page.evaluate(() => {
+                const items = [];
+                document.querySelectorAll('.default-product-tile').forEach(item => {
+                    const name = item.getAttribute('data-product-name') || 'No name';
+                    const priceElement = item.querySelector('.pricing__sale-price .price-update');
+                    const price = priceElement ? priceElement.innerText.replace('$', '') : '0.00';
+                    const category = item.getAttribute('data-product-category') || 'Unknown category';
+
+                    if (category === "Fruits & Vegetables") {
+                        items.push({ name, price, category, store: 'Food Basics' });
+                    }
+                });
+                return items;
+            });
+
+            console.log(results);
+            await browser.close();
+        }
+
+        async function scrapeWalmart(query) {
+            const url = `https://www.walmart.ca/search?q=${query}`;
+            const browser = await puppeteer.launch({ headless: true });
+            const page = await browser.newPage();
+            await page.setViewport({ width: 1200, height: 800 });
+            await page.goto(url, { waitUntil: 'networkidle2' });
+            await page.waitForSelector('.product-tile');
+
+            const results = await page.evaluate(() => {
+                const items = [];
+                document.querySelectorAll('.product-tile').forEach(item => {
+                    const nameElement = item.querySelector('.product-title') || {};
+                    const name = nameElement.innerText || 'No name';
+                    const priceElement = item.querySelector('.price') || {};
+                    const price = priceElement.innerText.replace('$', '') || '0.00';
+
+                    items.push({ name, price, category: 'General', store: 'Walmart' });
+                });
+                return items;
+            });
+
+            console.log(results);
+            await browser.close();
+        }
+
+        async function handleScraping() {
+            const query = document.getElementById('itemName').value;
+            const store = document.querySelector('input[name="store"]:checked').value;
+
+            if (store === 'Foodbasics') {
+                await scrapeFoodBasics(query);
+            } else if (store === 'Walmart') {
+                await scrapeWalmart(query);
+            } else {
+                console.error('Store not recognized');
+            }
+        }
+
+        document.getElementById('searchButton').addEventListener('click', () => {
+            handleScraping().catch(err => console.error("Error:", err));
+        });
+    </script>
+</body>
+</html>
