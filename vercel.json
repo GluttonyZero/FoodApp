@@ -8,11 +8,11 @@
     ],
     "routes": [
       {
-        "src": "/",
+        "src": "/(.*)",
         "dest": "/public/index.html"
       },
       {
-        "src": "/api/scrape",
+        "src": "/(.*)",
         "dest": "/api/scrape.js"
       }
     ]
