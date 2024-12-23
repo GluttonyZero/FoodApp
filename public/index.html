@@ -1,54 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Food Price Scraper</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Price Scraper</title>
 </head>
 <body>
-  <h1>Food Price Scraper</h1>
-  <input type="text" id="item" placeholder="Enter fruit/vegetable name" />
-  <br />
-  <input type="radio" id="foodBasics" name="store" value="FoodBasics" /> FoodBasics
-  <input type="radio" id="walmart" name="store" value="Walmart" /> Walmart
-  <br />
-  <button onclick="scrapeWebsite()">Scrape Prices</button>
+    <h1>Food Price Scraper</h1>
+    
+    <form id="scraperForm">
+        <input type="text" id="item" name="item" placeholder="Enter fruit/veggie name" required>
+        <br>
+        
+        <label for="store">Select Store:</label>
+        <input type="radio" id="foodbasics" name="store" value="FoodBasics" required>
+        <label for="foodbasics">Food Basics</label>
+        <input type="radio" id="walmart" name="store" value="Walmart" required>
+        <label for="walmart">Walmart</label>
+        <br>
+        
+        <button type="submit">Submit</button>
+    </form>
 
-  <div id="result"></div> <!-- The result will be displayed here -->
+    <h2>Results:</h2>
+    <div id="results"></div>
 
-  <script>
-    async function scrapeWebsite() {
-      const item = document.getElementById('item').value;
-      const store = document.querySelector('input[name="store"]:checked')?.value;
-      const resultDiv = document.getElementById('result');
+    <script>
+        document.getElementById('scraperForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
 
-      if (!item || !store) {
-        resultDiv.innerHTML = '<p>Please enter an item and select a store.</p>';
-        return;
-      }
+            const item = document.getElementById('item').value;
+            const store = document.querySelector('input[name="store"]:checked').value;
+            
+            // Make the request to the API
+            const response = await fetch(`/api/scraper?item=${item}&store=${store}`);
+            const data = await response.json();
 
-      resultDiv.innerHTML = "Scraping... Please wait.";
+            // Display the results
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';  // Clear previous results
 
-      try {
-        // Send a request to the Vercel backend
-        const response = await fetch(`/api/scraper?item=${encodeURIComponent(item)}&store=${encodeURIComponent(store)}`);
-        const data = await response.json();
-
-        let html = '<h2>Results:</h2>';
-        if (data.length > 0) {
-          html += '<ul>';
-          data.forEach(product => {
-            html += `<li>${product.name} - $${product.price} (${product.store})</li>`;
-          });
-          html += '</ul>';
-        } else {
-          html += '<p>No products found.</p>';
-        }
-        resultDiv.innerHTML = html;  // Display the results
-      } catch (error) {
-        resultDiv.innerHTML = `<p>Failed to fetch data. Error: ${error.message}</p>`;
-      }
-    }
-  </script>
+            if (data.error) {
+                resultsDiv.innerHTML = `<p style="color: red;">Error: ${data.error}</p>`;
+            } else {
+                data.forEach(item => {
+                    const result = document.createElement('div');
+                    result.innerHTML = `<strong>${item.name}</strong><br>Price: $${item.price}<br>Store: ${item.store}<br><br>`;
+                    resultsDiv.appendChild(result);
+                });
+            }
+        });
+    </script>
 </body>
 </html>
