@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Food Price Scraper</title>
+</head>
+<body>
+  <h1>Food Price Scraper</h1>
+  <input type="text" id="item" placeholder="Enter fruit/vegetable name" />
+  <br />
+  <input type="radio" id="foodBasics" name="store" value="FoodBasics" /> FoodBasics
+  <input type="radio" id="walmart" name="store" value="Walmart" /> Walmart
+  <br />
+  <button onclick="scrapeWebsite()">Scrape Prices</button>
+
+  <div id="result"></div> <!-- The result will be displayed here -->
+
+  <script>
+    async function scrapeWebsite() {
+      const item = document.getElementById('item').value;
+      const store = document.querySelector('input[name="store"]:checked')?.value;
+      const resultDiv = document.getElementById('result');
+
+      if (!item || !store) {
+        resultDiv.innerHTML = '<p>Please enter an item and select a store.</p>';
+        return;
+      }
+
+      resultDiv.innerHTML = "Scraping... Please wait.";
+
+      try {
+        // Send a request to the Vercel backend
+        const response = await fetch(`/api/scraper?item=${encodeURIComponent(item)}&store=${encodeURIComponent(store)}`);
+        const data = await response.json();
+
+        let html = '<h2>Results:</h2>';
+        if (data.length > 0) {
+          html += '<ul>';
+          data.forEach(product => {
+            html += `<li>${product.name} - $${product.price} (${product.store})</li>`;
+          });
+          html += '</ul>';
+        } else {
+          html += '<p>No products found.</p>';
+        }
+        resultDiv.innerHTML = html;  // Display the results
+      } catch (error) {
+        resultDiv.innerHTML = `<p>Failed to fetch data. Error: ${error.message}</p>`;
+      }
+    }
+  </script>
+</body>
+</html>
