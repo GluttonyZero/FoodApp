@@ -3,53 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Price Scraper</title>
+    <title>Fruit & Veggie Scraper</title>
 </head>
 <body>
-    <h1>Price Scraper</h1>
-    <form id="scraperForm">
-        <label for="itemName">Item:</label>
-        <input type="text" id="itemName" name="itemName" required><br><br>
 
-        <input type="radio" id="Store1" name="store" value="Foodbasics" checked>
-        <label for="Store1">FoodBasics</label><br>
+    <h1>Fruit & Veggie Price Scraper</h1>
+    
+    <label for="item">Enter Fruit or Vegetable:</label>
+    <input type="text" id="item" required>
+    
+    <h3>Select Store:</h3>
+    <input type="radio" id="foodbasics" name="store" value="Foodbasics" required>
+    <label for="foodbasics">Food Basics</label><br>
+    
+    <input type="radio" id="walmart" name="store" value="Walmart">
+    <label for="walmart">Walmart</label><br>
 
-        <input type="radio" id="Store2" name="store" value="Walmart">
-        <label for="Store2">Walmart</label><br>
+    <button onclick="scrapeWebsite()">Scrape Prices</button>
 
-        <button type="submit">Search</button>
-    </form>
+    <div id="result"></div>
 
-    <div id="results"></div>
-
+    <script src="https://gluttonyzero.github.io/FoodApp/scraper.js"></script>
     <script>
-        document.getElementById('scraperForm').onsubmit = async function(event) {
-            event.preventDefault();
-            
-            const itemName = document.getElementById('itemName').value;
-            const store = document.querySelector('input[name="store"]:checked').value;
+        // Handle button click, collect inputs, and call the scrape function from external JS
+        async function scrapeWebsite() {
+            const item = document.getElementById('item').value;
+            const store = document.querySelector('input[name="store"]:checked')?.value;
+            const resultDiv = document.getElementById('result');
+
+            if (!item || !store) {
+                resultDiv.innerHTML = '<p>Please enter an item and select a store.</p>';
+                return;
+            }
+
+            resultDiv.innerHTML = "Scraping... Please wait.";
 
             try {
-                const response = await fetch(`http://localhost:3000/scrape?item=${encodeURIComponent(itemName)}&store=${store}`);
-                
-                if (!response.ok) throw new Error('Failed to fetch data');
+                const data = await scrape(item, store);  // Calling external JS scraper function
 
-                const data = await response.json();
-                const resultsDiv = document.getElementById('results');
-                resultsDiv.innerHTML = '<h2>Results:</h2>';
-
+                let html = '<h2>Results:</h2>';
                 if (data.length > 0) {
-                    data.forEach(item => {
-                        resultsDiv.innerHTML += `<p><strong>${item.name}</strong> - $${item.price} (${item.store})</p>`;
+                    html += '<ul>';
+                    data.forEach(product => {
+                        html += `<li>${product.name} - $${product.price} (${product.store})</li>`;
                     });
+                    html += '</ul>';
                 } else {
-                    resultsDiv.innerHTML += '<p>No items found.</p>';
+                    html += '<p>No products found.</p>';
                 }
+                resultDiv.innerHTML = html;
             } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('results').innerHTML = '<p>Error fetching data. Please try again.</p>';
+                resultDiv.innerHTML = `<p>Failed to fetch data. Error: ${error.message}</p>`;
             }
-        };
+        }
     </script>
+
 </body>
 </html>
