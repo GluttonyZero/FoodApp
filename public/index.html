@@ -3,56 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Food Price Scraper</title>
+    <title>Food Scraper</title>
 </head>
 <body>
-    <h1>Food Price Scraper</h1>
+    <h1>Food Scraper</h1>
     
-    <!-- Form for input -->
-    <form id="scraperForm">
-        <label for="item">Enter a fruit or vegetable:</label>
-        <input type="text" id="item" name="item" required><br><br>
+    <!-- Form -->
+    <form id="scraper-form">
+        <label for="item">Enter Fruit/Vegetable:</label>
+        <input type="text" id="item" name="item" required>
 
-        <label for="store">Choose a store:</label><br>
-        <input type="radio" id="foodbasics" name="store" value="FoodBasics" required>
-        <label for="foodbasics">FoodBasics</label><br>
-        <input type="radio" id="walmart" name="store" value="Walmart">
-        <label for="walmart">Walmart</label><br><br>
+        <label for="store">Select Store:</label>
+        <input type="radio" id="FoodBasics" name="store" value="FoodBasics" required>
+        <label for="FoodBasics">Food Basics</label>
+        <input type="radio" id="Walmart" name="store" value="Walmart">
+        <label for="Walmart">Walmart</label>
 
-        <input type="submit" value="Submit">
+        <button type="submit">Submit</button>
     </form>
 
-    <!-- Div to display the results -->
     <div id="results"></div>
 
     <script>
-        document.getElementById('scraperForm').addEventListener('submit', async function(event) {
-            event.preventDefault();
+        document.getElementById('scraper-form').addEventListener('submit', async function(event) {
+            event.preventDefault();  // Prevent the default form submission
 
-            // Get the input data
             const item = document.getElementById('item').value;
             const store = document.querySelector('input[name="store"]:checked').value;
 
-            // Make the request to the API
+            // Send data to the API
             const response = await fetch(`/api/scraper?item=${item}&store=${store}`);
-
-            if (!response.ok) {
-                console.error('Failed to fetch data', response.statusText);
-                return;
-            }
-
             const data = await response.json();
-            const resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = '';  // Clear previous results
 
-            if (data.error) {
-                resultsDiv.innerHTML = `<p style="color: red;">Error: ${data.error}</p>`;
-            } else {
-                data.forEach(item => {
-                    const result = document.createElement('div');
-                    result.innerHTML = `<strong>${item.name}</strong><br>Price: $${item.price}<br>Store: ${item.store}<br><br>`;
-                    resultsDiv.appendChild(result);
+            // Display the results
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = ''; // Clear previous results
+            if (data.length > 0) {
+                data.forEach(result => {
+                    const resultDiv = document.createElement('div');
+                    resultDiv.innerHTML = `<strong>${result.name}</strong> - $${result.price} at ${result.store}`;
+                    resultsDiv.appendChild(resultDiv);
                 });
+            } else {
+                resultsDiv.innerHTML = 'No results found.';
             }
         });
     </script>
