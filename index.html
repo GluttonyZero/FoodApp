@@ -29,20 +29,25 @@
             const itemName = document.getElementById('itemName').value;
             const store = document.querySelector('input[name="store"]:checked').value;
 
-            // Fetch results from local Puppeteer server
-            const response = await fetch(`http://localhost:3000/scrape?item=${itemName}&store=${store}`);
-            const data = await response.json();
+            try {
+                const response = await fetch(`http://localhost:3000/scrape?item=${encodeURIComponent(itemName)}&store=${store}`);
+                
+                if (!response.ok) throw new Error('Failed to fetch data');
 
-            // Display results
-            const resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = '<h2>Results:</h2>';
+                const data = await response.json();
+                const resultsDiv = document.getElementById('results');
+                resultsDiv.innerHTML = '<h2>Results:</h2>';
 
-            if (data.length > 0) {
-                data.forEach(item => {
-                    resultsDiv.innerHTML += `<p><strong>${item.name}</strong> - $${item.price} (${item.store})</p>`;
-                });
-            } else {
-                resultsDiv.innerHTML += '<p>No items found.</p>';
+                if (data.length > 0) {
+                    data.forEach(item => {
+                        resultsDiv.innerHTML += `<p><strong>${item.name}</strong> - $${item.price} (${item.store})</p>`;
+                    });
+                } else {
+                    resultsDiv.innerHTML += '<p>No items found.</p>';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('results').innerHTML = '<p>Error fetching data. Please try again.</p>';
             }
         };
     </script>

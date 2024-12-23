@@ -4,7 +4,7 @@ import express from 'express';
 const app = express();
 const PORT = 3000;
 
-// Scraping for FoodBasics
+// Scraping FoodBasics
 async function scrapeFoodBasics(query) {
     const url = `https://www.foodbasics.ca/search?filter=${query}`;
     const browser = await puppeteer.launch({ headless: true });
@@ -26,7 +26,7 @@ async function scrapeFoodBasics(query) {
     return results;
 }
 
-// Scraping for Walmart
+// Scraping Walmart
 async function scrapeWalmart(query) {
     const url = `https://www.walmart.ca/search?q=${query}`;
     const browser = await puppeteer.launch({ headless: true });
@@ -48,7 +48,7 @@ async function scrapeWalmart(query) {
     return results;
 }
 
-// API Endpoint to handle scraping
+// API Endpoint
 app.get('/scrape', async (req, res) => {
     const { item, store } = req.query;
     let results = [];
