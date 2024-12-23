@@ -5,10 +5,12 @@ export default function Home() {
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(false);
 
+    // Function to handle the form submission
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        e.preventDefault();  // Prevent form from refreshing the page
         setLoading(true);
 
+        // Send the query to the backend API (scrape.js)
         const response = await fetch('/api/scrape', {
             method: 'POST',
             headers: {
@@ -25,6 +27,8 @@ export default function Home() {
     return (
         <div>
             <h1>Search Products on Food Basics</h1>
+
+            {/* Search form */}
             <form onSubmit={handleSubmit}>
                 <label htmlFor="query">Enter a product name:</label>
                 <input
@@ -42,7 +46,8 @@ export default function Home() {
 
             <hr />
 
-            {results.length > 0 && (
+            {/* Displaying search results */}
+            {results.length > 0 && !loading && (
                 <div>
                     <h2>Search Results for "{query}"</h2>
                     <ul>
@@ -58,6 +63,7 @@ export default function Home() {
                 </div>
             )}
 
+            {/* Message if no results found */}
             {results.length === 0 && !loading && query && (
                 <p>No products found. Try a different search!</p>
             )}
