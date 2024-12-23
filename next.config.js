@@ -1,4 +1,3 @@
-// next.config.js
 module.exports = {
     reactStrictMode: true,
     images: {
@@ -9,6 +8,9 @@ module.exports = {
         fs: 'empty', // Fixes issues with 'fs' module in serverless environments
       };
       return config;
+    },
+    env: {
+      PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"  // Ensures Puppeteer doesn't download Chromium
     },
   };
   
