@@ -3,51 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scraper</title>
+    <title>Food Basics Search</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        #result { white-space: pre-wrap; margin-top: 20px; }
+        body { font-family: Arial, sans-serif; }
+        #resultsList li { margin: 8px 0; }
     </style>
 </head>
 <body>
+    <h1>Food Basics Product Search</h1>
+    <input type="text" id="searchQuery" placeholder="Search for a product...">
+    <button onclick="scrapeData()">Search</button>
 
-    <h1>Scrape Product Information</h1>
-    <form id="scrapeForm">
-        <label for="query">Search Query:</label>
-        <input type="text" id="query" name="query" required>
-        <button type="submit">Submit</button>
-    </form>
-
-    <h2>Scraped Data:</h2>
-    <pre id="result"></pre>
+    <h2>Results:</h2>
+    <ul id="resultsList"></ul>
 
     <script>
-        const form = document.getElementById('scrapeForm');
-        const resultContainer = document.getElementById('result');
+        function scrapeData() {
+            const query = document.getElementById('searchQuery').value || 'apple';
+            
+            fetch(`scrape.php?q=${encodeURIComponent(query)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch data');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const resultsList = document.getElementById('resultsList');
+                    resultsList.innerHTML = '';
 
-        form.addEventListener('submit', async (event) => {
-            event.preventDefault();
-
-            const query = document.getElementById('query').value;
-
-            // Send a POST request to the server with the query
-            const response = await fetch('/scrape', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ query })
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                // Display the result in the <pre> element
-                resultContainer.textContent = JSON.stringify(data, null, 2);
-            } else {
-                resultContainer.textContent = "Error scraping data.";
-            }
-        });
+                    if (data.products && data.products.length > 0) {
+                        data.products.forEach(item => {
+                            const li = document.createElement('li');
+                            li.textContent = `${item.name} - $${item.price}`;
+                            resultsList.appendChild(li);
+                        });
+                    } else {
+                        resultsList.innerHTML = '<li>No products found</li>';
+                    }
+                })
+                .catch(error => {
+                    alert('Error retrieving data: ' + error.message);
+                });
+        }
     </script>
-
 </body>
 </html>
