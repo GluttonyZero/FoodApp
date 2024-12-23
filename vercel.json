@@ -2,18 +2,18 @@
     "version": 2,
     "builds": [
       {
-        "src": "api/scrape.js",
-        "use": "@vercel/node"
+        "src": "package.json",
+        "use": "@vercel/next"
       }
     ],
     "routes": [
       {
-        "src": "/(.*)",
-        "dest": "/public/index.html"
+        "src": "/api/scrape",
+        "dest": "/pages/api/scrape.js"
       },
       {
         "src": "/(.*)",
-        "dest": "/api/scrape.js"
+        "dest": "/$1"
       }
     ]
   }

@@ -1,20 +1,15 @@
 {
-  "name": "food-basics-scraper",
+  "name": "nextjs-scraper",
   "version": "1.0.0",
-  "description": "Product scraper for Food Basics",
-  "main": "index.js",
   "scripts": {
-    "dev": "vercel dev",
-    "build": "vercel build",
-    "deploy": "vercel deploy"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
   },
   "dependencies": {
-    "express": "^4.17.1",
-    "puppeteer": "^20.0.0",
-    "body-parser": "^1.19.0"
-  },
-  "devDependencies": {},
-  "engines": {
-    "node": "16.x"
+    "next": "^13.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "puppeteer": "^20.0.0"
   }
 }

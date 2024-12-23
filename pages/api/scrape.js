@@ -2,30 +2,16 @@ import puppeteer from 'puppeteer';
 
 export default async function handler(req, res) {
     if (req.method === 'POST') {
-        const query = req.body.query;
+        const { query } = req.body;
 
         try {
             const results = await scrapeFoodBasics(query);
-            res.status(200).send(`
-                <h1>Search Results for "${query}"</h1>
-                <ul>
-                    ${results.map(item => `
-                        <li>
-                            <strong>Name:</strong> ${item.name}<br>
-                            <strong>Price:</strong> $${item.price}<br>
-                            <strong>Category:</strong> ${item.category}<br>
-                            <strong>Store:</strong> ${item.store}
-                        </li>
-                    `).join('')}
-                </ul>
-                <hr>
-                <a href="/">Back to Search</a>
-            `);
+            res.status(200).json({ results });
         } catch (err) {
-            res.status(500).send(`<h1>Error: ${err.message}</h1>`);
+            res.status(500).json({ error: err.message });
         }
     } else {
-        res.status(405).send({ message: 'Only POST method is allowed' });
+        res.status(405).json({ message: 'Method Not Allowed' });
     }
 }
 
