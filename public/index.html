@@ -3,51 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Food Scraper</title>
+    <title>Scraper</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        #result { white-space: pre-wrap; margin-top: 20px; }
+    </style>
 </head>
 <body>
-    <h1>Food Scraper</h1>
-    
-    <!-- Form -->
-    <form id="scraper-form">
-        <label for="item">Enter Fruit/Vegetable:</label>
-        <input type="text" id="item" name="item" required>
 
-        <label for="store">Select Store:</label>
-        <input type="radio" id="FoodBasics" name="store" value="FoodBasics" required>
-        <label for="FoodBasics">Food Basics</label>
-        <input type="radio" id="Walmart" name="store" value="Walmart">
-        <label for="Walmart">Walmart</label>
-
+    <h1>Scrape Product Information</h1>
+    <form id="scrapeForm">
+        <label for="query">Search Query:</label>
+        <input type="text" id="query" name="query" required>
         <button type="submit">Submit</button>
     </form>
 
-    <div id="results"></div>
+    <h2>Scraped Data:</h2>
+    <pre id="result"></pre>
 
     <script>
-        document.getElementById('scraper-form').addEventListener('submit', async function(event) {
-            event.preventDefault();  // Prevent the default form submission
+        const form = document.getElementById('scrapeForm');
+        const resultContainer = document.getElementById('result');
 
-            const item = document.getElementById('item').value;
-            const store = document.querySelector('input[name="store"]:checked').value;
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
 
-            // Send data to the API
-            const response = await fetch(`/api/scraper?item=${item}&store=${store}`);
-            const data = await response.json();
+            const query = document.getElementById('query').value;
 
-            // Display the results
-            const resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = ''; // Clear previous results
-            if (data.length > 0) {
-                data.forEach(result => {
-                    const resultDiv = document.createElement('div');
-                    resultDiv.innerHTML = `<strong>${result.name}</strong> - $${result.price} at ${result.store}`;
-                    resultsDiv.appendChild(resultDiv);
-                });
+            // Send a POST request to the server with the query
+            const response = await fetch('/scrape', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ query })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                // Display the result in the <pre> element
+                resultContainer.textContent = JSON.stringify(data, null, 2);
             } else {
-                resultsDiv.innerHTML = 'No results found.';
+                resultContainer.textContent = "Error scraping data.";
             }
         });
     </script>
+
 </body>
 </html>
