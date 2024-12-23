@@ -1,15 +1,20 @@
 {
-  "name": "scraper-project",
+  "name": "food-basics-scraper",
   "version": "1.0.0",
-  "description": "A simple product scraper using Puppeteer and Express",
-  "main": "server.js",
+  "description": "Product scraper for Food Basics",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js"
+    "dev": "vercel dev",
+    "build": "vercel build",
+    "deploy": "vercel deploy"
   },
-  "author": "Your Name",
-  "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2",
-    "puppeteer": "^22.1.0"
+    "express": "^4.17.1",
+    "puppeteer": "^20.0.0",
+    "body-parser": "^1.19.0"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": "16.x"
   }
 }

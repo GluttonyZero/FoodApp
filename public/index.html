@@ -3,37 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fruit & Vegetable Price Checker</title>
+    <title>Product Scraper</title>
 </head>
 <body>
-    <h1>Check Fruit/Vegetable Prices</h1>
-    <form id="searchForm">
-        <input type="text" id="query" name="query" placeholder="Enter fruit/vegetable" required>
+    <h1>Search Products on Food Basics</h1>
+    <form action="/api/scrape" method="POST">
+        <label for="query">Enter a product name:</label>
+        <input type="text" id="query" name="query" required>
         <button type="submit">Search</button>
     </form>
-
-    <div id="results">
-        <!-- Scraped results will appear here -->
-    </div>
-
-    <script>
-        document.getElementById('searchForm').onsubmit = async function(e) {
-            e.preventDefault();
-            const query = document.getElementById('query').value;
-
-            const response = await fetch('/scrape', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ query })
-            });
-            
-            const data = await response.json();
-            const resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = `<h2>Results for: ${data.query}</h2>`;
-            data.items.forEach(item => {
-                resultsDiv.innerHTML += `<p>${item.name} - $${item.price}</p>`;
-            });
-        };
-    </script>
+    <hr>
+    <div id="results"></div>
 </body>
 </html>
