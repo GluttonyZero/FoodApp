@@ -21,5 +21,30 @@
     </form>
 
     <div id="results"></div>
+
+    <script>
+        document.getElementById('scraperForm').onsubmit = async function(event) {
+            event.preventDefault();
+            
+            const itemName = document.getElementById('itemName').value;
+            const store = document.querySelector('input[name="store"]:checked').value;
+
+            // Fetch results from local Puppeteer server
+            const response = await fetch(`http://localhost:3000/scrape?item=${itemName}&store=${store}`);
+            const data = await response.json();
+
+            // Display results
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<h2>Results:</h2>';
+
+            if (data.length > 0) {
+                data.forEach(item => {
+                    resultsDiv.innerHTML += `<p><strong>${item.name}</strong> - $${item.price} (${item.store})</p>`;
+                });
+            } else {
+                resultsDiv.innerHTML += '<p>No items found.</p>';
+            }
+        };
+    </script>
 </body>
 </html>

@@ -1,9 +1,13 @@
 import puppeteer from 'puppeteer';
+import express from 'express';
 
-// Scraper function for FoodBasics
+const app = express();
+const PORT = 3000;
+
+// Scraping for FoodBasics
 async function scrapeFoodBasics(query) {
     const url = `https://www.foodbasics.ca/search?filter=${query}`;
-    const browser = await puppeteer.launch({ headless: false });
+    const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'networkidle2' });
 
@@ -18,14 +22,14 @@ async function scrapeFoodBasics(query) {
         return items;
     });
 
-    console.log(results);
     await browser.close();
+    return results;
 }
 
-// Scraper function for Walmart
+// Scraping for Walmart
 async function scrapeWalmart(query) {
     const url = `https://www.walmart.ca/search?q=${query}`;
-    const browser = await puppeteer.launch({ headless: false });
+    const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'networkidle2' });
 
@@ -40,26 +44,28 @@ async function scrapeWalmart(query) {
         return items;
     });
 
-    console.log(results);
     await browser.close();
+    return results;
 }
 
-// Main Function - Call appropriate scraper based on input
-(async () => {
-    const args = process.argv.slice(2); // Read from command line
-    const query = args[0];
-    const store = args[1];
+// API Endpoint to handle scraping
+app.get('/scrape', async (req, res) => {
+    const { item, store } = req.query;
+    let results = [];
 
-    if (!query || !store) {
-        console.error('Usage: node scraper.js <item> <store>');
-        process.exit(1);
-    }
-
-    if (store.toLowerCase() === 'foodbasics') {
-        await scrapeFoodBasics(query);
-    } else if (store.toLowerCase() === 'walmart') {
-        await scrapeWalmart(query);
+    if (store === 'Foodbasics') {
+        results = await scrapeFoodBasics(item);
+    } else if (store === 'Walmart') {
+        results = await scrapeWalmart(item);
     } else {
-        console.error('Store not recognized.');
+        res.status(400).send({ error: 'Invalid store' });
+        return;
     }
-})();
+
+    res.json(results);
+});
+
+// Start Server
+app.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
+});
