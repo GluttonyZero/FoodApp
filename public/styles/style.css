@@ -40,7 +40,7 @@ input {
 button {
     padding: 10px;
     background-color: #007bff;
-    color: white;
+    color: blue;
     border: none;
     cursor: pointer;
 }
