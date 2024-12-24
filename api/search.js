@@ -3,7 +3,7 @@ import chromium from 'chrome-aws-lambda';
 export default async function handler(req, res) {
     const query = req.query.query || 'apple'; // Default query is 'apple' if no query is provided
     const url = `https://www.foodbasics.ca/search?filter=${query}`;
-    
+
     let browser = null;
     try {
         // Launch Puppeteer with chrome-aws-lambda configurations
