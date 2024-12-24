@@ -21,15 +21,17 @@ async function scrapeFoodBasics(query) {
     document.querySelectorAll('.default-product-tile').forEach(item => {
       const name = item.getAttribute('data-product-name') || 'No name';
       const productId = item.getAttribute('data-product-code') || 'N/A';
-
+      
+      // Get visible product title if available
       const titleElement = document.querySelector(`#itemTitle-${productId}`);
       const visibleTitle = titleElement ? titleElement.innerText : name;
-
+      
+      // Extract price from .pricing__sale-price
       const priceElement = item.querySelector('.pricing__sale-price .price-update');
       const price = priceElement ? priceElement.innerText.replace('$', '') : '0.00';
 
       const category = item.getAttribute('data-product-category') || 'Unknown category';
-
+      
       items.push({
         name: visibleTitle,
         price: parseFloat(price),
@@ -40,30 +42,28 @@ async function scrapeFoodBasics(query) {
     return items;
   });
 
-  // Write results to a CSV file
-  const csvFilePath = path.join(process.cwd(), 'public', 'scrapedData.csv');
-  const csvHeader = 'Name, Price, Category, Store\n';
-  const csvRows = results.map(item => `${item.name}, ${item.price}, ${item.category}, ${item.store}`).join('\n');
-  const csvContent = csvHeader + csvRows;
-
-  fs.writeFileSync(csvFilePath, csvContent, 'utf8');
-
   await browser.close();
   return results;
 }
 
-// API route handler
 export default async function handler(req, res) {
   if (req.method === 'POST') {
     const { query } = req.body;
 
-    // Ensure the query is present
     if (!query) {
       return res.status(400).json({ error: 'Query parameter is required' });
     }
 
     try {
       const results = await scrapeFoodBasics(query);
+
+      // Write results to CSV
+      const filePath = path.join(process.cwd(), 'public', 'scraped_results.csv');
+      const csvData = 'Name,Price,Category,Store\n' +
+        results.map(item => `${item.name},${item.price},${item.category},${item.store}`).join('\n');
+        
+      fs.writeFileSync(filePath, csvData);
+
       res.status(200).json({ message: 'Scraping complete', data: results });
     } catch (error) {
       res.status(500).json({ error: 'An error occurred while scraping' });

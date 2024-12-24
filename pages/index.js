@@ -2,11 +2,12 @@ import { useState } from 'react';
 
 export default function Home() {
   const [query, setQuery] = useState('');
-  const [scrapeData, setScrapeData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [results, setResults] = useState([]);
   const [error, setError] = useState(null);
 
-  const handleScrape = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setLoading(true);
     setError(null);
 
@@ -24,85 +25,61 @@ export default function Home() {
       }
 
       const data = await res.json();
-
-      if (data.message === 'Scraping complete') {
-        alert('Scraping complete!');
-        fetchCsvData(); // Once scraping is complete, fetch the CSV data
-      }
+      setResults(data.data || []);
+      setLoading(false);
     } catch (err) {
       setError('An error occurred while scraping.');
-    } finally {
       setLoading(false);
     }
   };
 
-  const fetchCsvData = async () => {
-    try {
-      const res = await fetch('/scrapedData.csv');
-      if (!res.ok) {
-        throw new Error('Failed to fetch CSV');
-      }
-
-      const text = await res.text();
-      const parsedData = parseCSV(text);
-      setScrapeData(parsedData);
-    } catch (err) {
-      setError('An error occurred while fetching the CSV data.');
-    }
-  };
-
-  const parseCSV = (csvText) => {
-    const lines = csvText.split('\n');
-    const headers = lines[0].split(',');  // Header row
-    const rows = lines.slice(1); // Data rows
-
-    return rows.map(row => {
-      const values = row.split(',');
-      const obj = {};
-      headers.forEach((header, index) => {
-        obj[header.trim()] = values[index].trim();
-      });
-      return obj;
-    });
+  const handleDownload = () => {
+    window.location.href = '/scraped_results.csv';
   };
 
   return (
     <div>
       <h1>Food Basics Scraper</h1>
-      
-      <input
-        type="text"
-        placeholder="Enter product name"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-      />
-      <button onClick={handleScrape} disabled={loading}>
-        {loading ? 'Scraping...' : 'Scrape'}
-      </button>
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Search for products"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+        <button type="submit" disabled={loading}>
+          {loading ? 'Scraping...' : 'Search'}
+        </button>
+      </form>
 
-      {scrapeData && (
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Price</th>
-              <th>Category</th>
-              <th>Store</th>
-            </tr>
-          </thead>
-          <tbody>
-            {scrapeData.map((item, index) => (
-              <tr key={index}>
-                <td>{item.Name}</td>
-                <td>{item.Price}</td>
-                <td>{item.Category}</td>
-                <td>{item.Store}</td>
+      {error && <p>{error}</p>}
+
+      {results.length > 0 && (
+        <div>
+          <h2>Results</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Category</th>
+                <th>Store</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {results.map((item, index) => (
+                <tr key={index}>
+                  <td>{item.name}</td>
+                  <td>{item.price}</td>
+                  <td>{item.category}</td>
+                  <td>{item.store}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <button onClick={handleDownload}>Download CSV</button>
+        </div>
       )}
     </div>
   );
