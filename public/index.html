@@ -1,50 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Food Scraping</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Food Scraper</title>
+  <script defer src="/scripts.js"></script>
 </head>
 <body>
-    <h1>Search for Products</h1>
+  <h1>Food Scraper</h1>
+  <form id="foodForm">
+    <label for="foodInput">Enter food item:</label>
+    <input type="text" id="foodInput" name="foodInput" required>
+    <button type="submit">Search</button>
+  </form>
 
-    <form id="food-form">
-        <label for="food">Enter Food Item:</label>
-        <input type="text" id="food" name="food" required />
-        <button type="submit">Search</button>
-    </form>
+  <div id="results"></div>
 
-    <div id="results"></div>
+  <script>
+    document.getElementById('foodForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const query = document.getElementById('foodInput').value.trim();
 
-    <script>
-        // Handle form submission
-        document.getElementById('food-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const food = document.getElementById('food').value;
-            const response = await fetch('/api/scrape', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ food })
-            });
+      if (!query) {
+        alert('Please enter a food item');
+        return;
+      }
 
-            const data = await response.json();
+      // Fetch scraped data from the server
+      const response = await fetch(`/api/search?query=${query}`);
+      const data = await response.json();
 
-            const resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = ''; // Clear previous results
+      if (data.error) {
+        alert('Error fetching data: ' + data.error);
+        return;
+      }
 
-            if (data.results && data.results.length > 0) {
-                const list = document.createElement('ul');
-                data.results.forEach(item => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `<strong>${item.name}</strong> - $${item.price} - ${item.category}`;
-                    list.appendChild(li);
-                });
-                resultsDiv.appendChild(list);
-            } else {
-                resultsDiv.innerHTML = 'No products found.';
-            }
+      // Populate results
+      const resultsContainer = document.getElementById('results');
+      resultsContainer.innerHTML = '';
+
+      if (data.length === 0) {
+        resultsContainer.innerHTML = '<p>No products found.</p>';
+      } else {
+        data.forEach(item => {
+          const productElement = document.createElement('div');
+          productElement.innerHTML = `
+            <h3>${item.name}</h3>
+            <p>Price: $${item.price}</p>
+            <p>Category: ${item.category}</p>
+            <p>Store: ${item.store}</p>
+          `;
+          resultsContainer.appendChild(productElement);
         });
-    </script>
+      }
+    });
+  </script>
 </body>
 </html>

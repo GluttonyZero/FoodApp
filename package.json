@@ -1,19 +1,21 @@
 {
   "name": "food-scraper",
   "version": "1.0.0",
-  "description": "Scraping products from Food Basics",
+  "description": "A project to scrape food prices and display them on a webpage",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "dev": "vercel dev", 
+    "build": "vercel build", 
+    "start": "vercel start"
   },
   "dependencies": {
-    "puppeteer-core": "^22.0.0",
-    "express": "^4.17.1"
+    "puppeteer": "^21.3.8", 
+    "@vercel/node": "^2.0.0"
   },
+  "devDependencies": {},
   "engines": {
-    "node": "18.x"
+    "node": "16.x"
   },
-  "devDependencies": {
-    "dotenv": "^10.0.0"
-  }
+  "author": "Your Name",
+  "license": "MIT"
 }
