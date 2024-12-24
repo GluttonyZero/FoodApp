@@ -1,17 +1,19 @@
 {
   "name": "food-scraper",
   "version": "1.0.0",
-  "description": "A food scraper for Food Basics",
+  "description": "Scraping products from Food Basics",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "vercel dev"
+    "start": "node index.js"
   },
   "dependencies": {
-    "puppeteer": "^22.0.0",
-    "isolated-vm": "^1.5.0"
+    "puppeteer-core": "^22.0.0",
+    "express": "^4.17.1"
   },
   "engines": {
-    "node": "16.x"
+    "node": "18.x"
+  },
+  "devDependencies": {
+    "dotenv": "^10.0.0"
   }
 }
