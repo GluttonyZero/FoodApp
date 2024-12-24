@@ -1,10 +1,12 @@
 {
   "name": "food-app",
   "version": "1.0.0",
+  "engines": {
+    "node": "18.x"
+  },
   "dependencies": {
     "playwright": "^1.28.0"
   },
-  "devDependencies": {},
   "scripts": {
     "start": "vercel dev"
   }
