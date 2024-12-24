@@ -4,20 +4,17 @@
     {
       "src": "api/*.js",
       "use": "@vercel/node"
-    },
-    {
-      "src": "public/*",
-      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/api/search",
       "dest": "/api/search.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/public/index.html"
     }
-  ]
+  ],
+  "build": {
+    "env": {
+      "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD": "false"
+    }
+  }
 }
