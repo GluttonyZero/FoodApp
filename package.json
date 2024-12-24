@@ -1,6 +1,7 @@
 {
-    "name": "food-scraper",
+    "name": "food-basics-scraper",
     "version": "1.0.0",
+    "description": "A web scraper for Food Basics that extracts product data and saves it to a CSV file.",
     "main": "index.js",
     "scripts": {
       "dev": "next dev",
@@ -8,14 +9,18 @@
       "start": "next start"
     },
     "dependencies": {
-      "next": "13.4.0",
-      "react": "18.0.0",
-      "react-dom": "18.0.0",
-      "puppeteer": "^22.8.2"
+      "chrome-aws-lambda": "^10.0.0",
+      "next": "^13.0.0",
+      "puppeteer-core": "^22.8.2",
+      "react": "^18.2.0",
+      "react-dom": "^18.2.0"
     },
     "devDependencies": {
-      "eslint": "8.16.0",
-      "eslint-config-next": "13.4.0"
-    }
+      "eslint": "8.55.0"
+    },
+    "engines": {
+      "node": "22.x"
+    },
+    "license": "MIT"
   }
   
