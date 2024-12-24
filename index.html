@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Basics Product Search</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 50px; text-align: center; }
+        input[type="text"] { padding: 10px; width: 300px; }
+        button { padding: 10px 20px; }
+    </style>
+</head>
+<body>
+    <h1>Search Food Basics Products</h1>
+    <form action="/api/search" method="get">
+        <input type="text" name="query" placeholder="Enter product (e.g., apple)" required>
+        <button type="submit">Search</button>
+    </form>
+</body>
+</html>
