@@ -3,7 +3,7 @@
   "builds": [
     {
       "src": "api/search.js",
-      "use": "@ve rcel/node"
+      "use": "@vercel/node"
     }
   ],
   "functions": {
