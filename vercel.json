@@ -1,3 +1,14 @@
 {
-  "version": 2
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/search.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "functions": {
+    "api/search.js": {
+      "runtime": "nodejs18.x"
+    }
+  }
 }

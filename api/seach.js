@@ -1,4 +1,3 @@
-// api/search.js
 import scrapeFoodBasics from '../scraping.js';
 
 export default async function handler(req, res) {

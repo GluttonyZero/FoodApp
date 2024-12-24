@@ -5,6 +5,7 @@
     "node": "18.x"
   },
   "dependencies": {
+    "puppeteer": "^21.11.0",
     "playwright": "^1.28.0"
   },
   "scripts": {
