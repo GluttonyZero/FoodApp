@@ -8,8 +8,7 @@
   },
   "dependencies": {
     "puppeteer": "^22.0.0", 
-    "isolated-vm": "^1.5.0", 
-    "other-dependency": "^1.2.3"
+    "isolated-vm": "^1.5.0"
   },
   "devDependencies": {
     "other-dev-dependency": "^4.5.6"
