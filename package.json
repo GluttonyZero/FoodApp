@@ -2,21 +2,16 @@
     "name": "food-basics-scraper",
     "version": "1.0.0",
     "scripts": {
-  "dev": "next dev",
-  "build": "next build",
-  "start": "next start",
-  "postinstall": "puppeteer install --skip-chromium-download"
-}
-,
+      "dev": "next dev",
+      "build": "next build",
+      "start": "next start"
+    },
     "dependencies": {
-      "next": "13.x",
-      "react": "18.x",
-      "react-dom": "18.x",
+      "next": "13.4.0",
+      "react": "18.2.0",
+      "react-dom": "18.2.0",
       "puppeteer": "^22.8.2"
     },
-    "devDependencies": {},
-    "engines": {
-      "node": "22.x"
-    }
+    "devDependencies": {}
   }
   
