@@ -1,11 +1,17 @@
-import puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer-core'; // Use puppeteer-core with chrome-aws-lambda
+import chrome from 'chrome-aws-lambda';
 import fs from 'fs';
 import path from 'path';
 
 async function scrapeFoodBasics(query) {
   const url = `https://www.foodbasics.ca/search?filter=${query}`;
+  
+  const browser = await puppeteer.launch({
+    args: [...chrome.args, '--disable-dev-shm-usage'],
+    executablePath: await chrome.executablePath,
+    headless: true,
+  });
 
-  const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
   await page.setViewport({ width: 1200, height: 800 });
 
@@ -66,6 +72,7 @@ export default async function handler(req, res) {
 
       res.status(200).json({ message: 'Scraping complete', data: results });
     } catch (error) {
+      console.error('Scraping failed:', error);
       res.status(500).json({ error: 'An error occurred while scraping' });
     }
   } else {
