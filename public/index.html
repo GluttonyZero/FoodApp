@@ -1,59 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Food Scraper</title>
-  <script defer src="/scripts.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Price Scraper</title>
 </head>
 <body>
-  <h1>Food Scraper</h1>
-  <form id="foodForm">
-    <label for="foodInput">Enter food item:</label>
-    <input type="text" id="foodInput" name="foodInput" required>
-    <button type="submit">Search</button>
-  </form>
+    <h1>Search for Food Prices</h1>
+    <form id="searchForm">
+        <input type="text" id="query" placeholder="Enter food item" required>
+        <button type="submit">Search</button>
+    </form>
+    <div id="results"></div>
 
-  <div id="results"></div>
+    <script>
+        document.getElementById('searchForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const query = document.getElementById('query').value;
+            const res = await fetch(`/api/search?query=${query}`);
+            const data = await res.json();
 
-  <script>
-    document.getElementById('foodForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const query = document.getElementById('foodInput').value.trim();
-
-      if (!query) {
-        alert('Please enter a food item');
-        return;
-      }
-
-      // Fetch scraped data from the server
-      const response = await fetch(`/api/search?query=${query}`);
-      const data = await response.json();
-
-      if (data.error) {
-        alert('Error fetching data: ' + data.error);
-        return;
-      }
-
-      // Populate results
-      const resultsContainer = document.getElementById('results');
-      resultsContainer.innerHTML = '';
-
-      if (data.length === 0) {
-        resultsContainer.innerHTML = '<p>No products found.</p>';
-      } else {
-        data.forEach(item => {
-          const productElement = document.createElement('div');
-          productElement.innerHTML = `
-            <h3>${item.name}</h3>
-            <p>Price: $${item.price}</p>
-            <p>Category: ${item.category}</p>
-            <p>Store: ${item.store}</p>
-          `;
-          resultsContainer.appendChild(productElement);
-        });
-      }
-    });
-  </script>
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = data.map(item => `<p>${item.name}: $${item.price}</p>`).join('');
+        };
+    </script>
 </body>
 </html>
