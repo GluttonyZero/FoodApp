@@ -1,14 +1,17 @@
 {
-  "name": "food-scraper",
+  "name": "your-project",
   "version": "1.0.0",
+  "description": "Your project description",
+  "main": "index.js",
   "scripts": {
-    "start": "vercel dev",
-    "build": "vercel build"
+    "start": "node index.js"
   },
   "dependencies": {
-    "puppeteer": "^21.11.0"
+    "puppeteer": "^22.0.0", 
+    "isolated-vm": "^1.5.0", 
+    "other-dependency": "^1.2.3"
   },
   "devDependencies": {
-    "vercel": "^29.0.0"
+    "other-dev-dependency": "^4.5.6"
   }
 }
