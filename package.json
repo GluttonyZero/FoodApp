@@ -1,15 +1,12 @@
 {
-  "name": "food-basics-scraper",
+  "name": "food-app",
   "version": "1.0.0",
-  "description": "Web scraper for Food Basics product search using Puppeteer",
-  "main": "api/search.js",
-  "scripts": {
-    "start": "vercel dev",
-    "deploy": "vercel"
-  },
+  "main": "index.js",
   "dependencies": {
-    "puppeteer": "^22.8.2",
-    "chrome-aws-lambda": "^10.0.0"
+    "playwright": "^1.28.0"
   },
-  "type": "module"
+  "devDependencies": {},
+  "scripts": {
+    "start": "vercel dev"
+  }
 }
