@@ -2,13 +2,25 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/search.js",
+      "src": "index.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "api/scrape.js",
       "use": "@vercel/node"
     }
   ],
-  "functions": {
-    "api/search.js": {
-      "runtime": "nodejs18.x"
+  "routes": [
+    {
+      "src": "/api/scrape",
+      "dest": "/api/scrape.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
+  ],
+  "env": {
+    "PUPPETEER_EXECUTABLE_PATH": "/usr/bin/chromium"
   }
 }

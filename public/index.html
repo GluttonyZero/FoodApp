@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Scraping</title>
+</head>
+<body>
+    <h1>Search for Products</h1>
+
+    <form id="food-form">
+        <label for="food">Enter Food Item:</label>
+        <input type="text" id="food" name="food" required />
+        <button type="submit">Search</button>
+    </form>
+
+    <div id="results"></div>
+
+    <script>
+        // Handle form submission
+        document.getElementById('food-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const food = document.getElementById('food').value;
+            const response = await fetch('/api/scrape', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ food })
+            });
+
+            const data = await response.json();
+
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = ''; // Clear previous results
+
+            if (data.results && data.results.length > 0) {
+                const list = document.createElement('ul');
+                data.results.forEach(item => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<strong>${item.name}</strong> - $${item.price} - ${item.category}`;
+                    list.appendChild(li);
+                });
+                resultsDiv.appendChild(list);
+            } else {
+                resultsDiv.innerHTML = 'No products found.';
+            }
+        });
+    </script>
+</body>
+</html>

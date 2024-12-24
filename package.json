@@ -1,14 +1,14 @@
 {
-  "name": "food-app",
+  "name": "food-scraper",
   "version": "1.0.0",
-  "engines": {
-    "node": "18.x"
+  "scripts": {
+    "start": "vercel dev",
+    "build": "vercel build"
   },
   "dependencies": {
-    "puppeteer": "^21.11.0",
-    "playwright": "^1.28.0"
+    "puppeteer": "^21.11.0"
   },
-  "scripts": {
-    "start": "vercel dev"
+  "devDependencies": {
+    "vercel": "^29.0.0"
   }
 }
